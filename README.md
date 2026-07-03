@@ -1,6 +1,6 @@
 # Health Tracker
 
-Private, personal health tracking app for 3 users (owner, spouse, read-only doctor). Next.js 14 App Router, NextAuth v5 Credentials auth, Vercel KV, Anthropic AI features.
+Private, personal health tracking app for 3 users (owner, spouse, read-only doctor). Next.js 14 App Router, NextAuth v5 Credentials auth, Vercel KV, OpenAI AI features.
 
 ## 1. Local setup
 
@@ -50,7 +50,7 @@ EMAIL_DOCTOR=
 KV_REST_API_URL=        # from Vercel KV dashboard
 KV_REST_API_TOKEN=      # from Vercel KV dashboard
 
-ANTHROPIC_API_KEY=      # console.anthropic.com
+OPENAI_API_KEY=         # platform.openai.com
 
 NEXT_PUBLIC_APP_NAME=Health Tracker
 ```
@@ -89,7 +89,7 @@ To add a 4th user: this requires a small code change in `lib/auth.ts` (`getUsers
 
 ## Architecture notes
 
-- All AI calls (`/api/ai/*`) run server-side only; `ANTHROPIC_API_KEY` is never sent to the client.
+- All AI calls (`/api/ai/*`) run server-side only; `OPENAI_API_KEY` is never sent to the client.
 - Food photos are processed in-memory and never persisted to disk or KV — only the resulting meal entry (name/calories) is saved.
 - Data is namespaced per user email in KV: `{email}:health:day:{date}` and `{email}:health:profile`.
 - Doctor account always reads/writes (attempted writes are blocked with 403) Nitin's namespace, never the doctor's own.

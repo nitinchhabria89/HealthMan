@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { requireSession, requireWriteAccess } from "@/lib/api-auth";
 import type { ChatMessage, DayLog, Profile } from "@/lib/types";
-
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
   const session = await requireSession();
@@ -30,27 +28,30 @@ Today so far: ${consumed}kcal consumed, workout ${dayContext?.workout?.done ? `d
 Be practical, warm, and concise. Use Indian food and lifestyle context where relevant. Do not diagnose medical conditions; suggest seeing a doctor for anything serious.`;
 
   try {
-    const stream = anthropic.messages.stream({
-      model: "claude-sonnet-4-5",
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const stream = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
       max_tokens: 800,
-      system: systemPrompt,
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+      stream: true,
+      messages: [
+        { role: "system", content: systemPrompt },
+        ...messages.map((m) => ({ role: m.role, content: m.content } as const)),
+      ],
     });
 
     const encoder = new TextEncoder();
     const readable = new ReadableStream({
       async start(controller) {
-        stream.on("text", (text) => {
-          controller.enqueue(encoder.encode(text));
-        });
-        stream.on("end", () => controller.close());
-        stream.on("error", (err) => {
+        try {
+          for await (const chunk of stream) {
+            const text = chunk.choices[0]?.delta?.content;
+            if (text) controller.enqueue(encoder.encode(text));
+          }
+          controller.close();
+        } catch (err) {
           console.error("coach stream error", err);
           controller.error(err);
-        });
-      },
-      cancel() {
-        stream.abort();
+        }
       },
     });
 

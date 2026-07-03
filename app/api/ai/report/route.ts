@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { requireSession } from "@/lib/api-auth";
 import type { Profile } from "@/lib/types";
 import type { ReportAggregate } from "@/hooks/useReportData";
-
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
   const session = await requireSession();
@@ -41,24 +39,26 @@ Medicines: ${medicineSummary}.
 Mood distribution: ${moodSummary}.`;
 
   try {
-    const msg = await anthropic.messages.create({
-      model: "claude-sonnet-4-5",
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
       max_tokens: 900,
-      system: `You are a personal health coach reviewing ${period}-day tracked data for a health app user. Write a structured review with exactly these four sections, each starting with the emoji shown:
+      messages: [
+        {
+          role: "system",
+          content: `You are a personal health coach reviewing ${period}-day tracked data for a health app user. Write a structured review with exactly these four sections, each starting with the emoji shown:
 🟢 Working — what's going well
 🟡 Watch — things trending in the wrong direction, not yet critical
 🔴 Concerns — anything that needs real attention (be honest but not alarmist; never diagnose)
 💡 Action Plan — 3-4 concrete, practical next steps
 
 Keep it warm, specific to the data given, and concise, under 300 words total. Use Indian lifestyle context where relevant.`,
-      messages: [{ role: "user", content: prompt }],
+        },
+        { role: "user", content: prompt },
+      ],
     });
 
-    const review = msg.content
-      .filter((b): b is Anthropic.TextBlock => b.type === "text")
-      .map((b) => b.text)
-      .join("\n");
-
+    const review = completion.choices[0]?.message?.content || "";
     return NextResponse.json({ review });
   } catch (err) {
     console.error("report failed", err);

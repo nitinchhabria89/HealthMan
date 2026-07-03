@@ -7,7 +7,7 @@ Private, personal health tracker for 3 users only (owner, spouse, read-only doct
 - Next.js 14 App Router + TypeScript
 - NextAuth.js v5 (beta) — Credentials provider only, JWT sessions
 - Vercel KV (`@vercel/kv`, Redis) — all data storage, no SQL database
-- Anthropic SDK — server-side only, `claude-sonnet-4-5`
+- OpenAI SDK — server-side only, `gpt-4o-mini` (switched from Anthropic; see note below)
 - Tailwind CSS
 - Recharts — charts on Reports page
 - bcryptjs — password hashing
@@ -52,7 +52,7 @@ Colors live in `tailwind.config.ts` as named tokens (`bg`, `surface`, `border`, 
 /app
   /api/auth/[...nextauth]/route.ts    NextAuth handler
   /api/health/{day,profile,keys}      Data CRUD, doctor-write-blocked
-  /api/ai/{analyze-food,symptom-advice,coach,report}   Server-only Anthropic calls
+  /api/ai/{analyze-food,symptom-advice,coach,report}   Server-only OpenAI calls
   /(auth)/login                       Public
   /(app)/{dashboard,food,health,workout,coach,reports} Protected, guarded by (app)/layout.tsx + middleware.ts
 /components/{ui,dashboard,food,health,workout,coach,reports}
@@ -73,4 +73,10 @@ See `.env.example`. Full setup (bcrypt hash generation, Vercel KV provisioning, 
 
 ## Build status
 
-All 6 pages, 4 AI routes, and the health/profile/keys API are implemented and build clean (`npm run build`). Auth flow (login → protected routes → doctor 403 on writes → sign out) verified live. Actual data persistence and AI features are untested against real Vercel KV / Anthropic credentials — `.env.local` currently holds dev-only placeholder values.
+All 6 pages, 4 AI routes, and the health/profile/keys API are implemented and build clean (`npm run build`). Auth flow (login → protected routes → doctor 403 on writes → sign out) verified live. Actual data persistence and AI features are untested against real Vercel KV / OpenAI credentials — `.env.local` currently holds dev-only placeholder values.
+
+## Provider note
+
+Originally spec'd for Anthropic (`claude-sonnet-4-5`). Switched to OpenAI (`gpt-4o-mini`) because the user had OpenAI credits and $0 Anthropic balance. All 4 `/api/ai/*` routes use the `openai` SDK, `chat.completions.create` (vision via `image_url` with a base64 data URL, streaming via `stream: true` + async iteration over `chunk.choices[0].delta.content`). Swapping back or between models only touches these 4 route files — no other code depends on the provider.
+
+**`new OpenAI(...)` must stay inside the request handler, not at module scope.** Unlike the Anthropic SDK, the OpenAI SDK throws at construction time if `apiKey` is empty/undefined. Module-scope instantiation ran during `next build`'s page-data collection (which imports route modules without a guaranteed real API key locally) and broke the build. Each route creates its client lazily inside `POST()`.
