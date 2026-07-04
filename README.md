@@ -47,8 +47,8 @@ EMAIL_NITIN=
 EMAIL_SPOUSE=
 EMAIL_DOCTOR=
 
-KV_REST_API_URL=        # from Vercel KV dashboard
-KV_REST_API_TOKEN=      # from Vercel KV dashboard
+KV_REST_API_URL=        # from Vercel KV, or Upstash dashboard's "REST API" tab
+KV_REST_API_TOKEN=      # same source — note Upstash labels these UPSTASH_REDIS_REST_URL/TOKEN, rename to the keys above
 
 OPENAI_API_KEY=         # platform.openai.com
 
@@ -57,11 +57,23 @@ NEXT_PUBLIC_APP_NAME=Health Tracker
 
 Doctor's account (`EMAIL_DOCTOR`) is always read-only and always views Nitin's data (`EMAIL_NITIN`'s KV namespace) — this is hardcoded in `lib/auth.ts`.
 
-## 4. Vercel KV setup
+## 4. KV setup
 
-1. In the Vercel dashboard, open your project → **Storage** → **Create Database** → **KV** (or install a Redis integration from the Marketplace if KV is unavailable — same `@vercel/kv` client works with any Upstash-compatible Redis).
+The app talks to Redis via Upstash's REST API — `@vercel/kv` is just a thin wrapper around it (see `lib/kv.ts`). Two ways to get a working store, same result either way:
+
+**Option A — Upstash directly (fastest for local dev, no Vercel project needed):**
+1. Sign up at [upstash.com](https://upstash.com) (free tier, no card).
+2. Create Database → Redis → pick a region.
+3. Open the DB → **REST API** tab → copy `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
+4. Put those values into `.env.local` as `KV_REST_API_URL` and `KV_REST_API_TOKEN` — same values, different key names.
+5. Restart the dev server (Next.js only reads `.env.local` at process startup, so env var changes need a restart to take effect).
+
+**Option B — Vercel KV (when you're already deploying to Vercel):**
+1. In the Vercel dashboard, open your project → **Storage** → **Create Database** → **KV** (or install a Redis integration from the Marketplace if KV is unavailable).
 2. Link the store to your project.
 3. Vercel injects `KV_REST_API_URL` and `KV_REST_API_TOKEN` automatically for deployed environments. For local dev, copy those values from the store's `.env.local` tab into your own `.env.local`.
+
+Both options produce a store you can also link into Vercel later — an Upstash DB created directly (Option A) can be connected to a Vercel project afterward via the Marketplace integration, no data migration needed.
 
 ## 5. Deploy to Vercel
 
