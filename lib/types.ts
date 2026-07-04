@@ -33,6 +33,16 @@ export type Medicine = {
   time: string;
 };
 
+export type MenuMealType = "breakfast" | "lunch" | "dinner";
+
+export type MenuSlot = { name: string; calories: number | null; logged: boolean } | null;
+
+export type MenuPlan = {
+  breakfast: MenuSlot;
+  lunch: MenuSlot;
+  dinner: MenuSlot;
+};
+
 export type Workout = {
   walk: boolean;
   steps: number | null;
@@ -56,6 +66,7 @@ export type DayLog = {
   water: number; // glasses
   notes: string;
   calorieTarget?: number;
+  menuPlan: MenuPlan;
 };
 
 export type Gender = "male" | "female";
@@ -120,5 +131,6 @@ export function emptyDayLog(date: string): DayLog {
     weight: null,
     water: 0,
     notes: "",
+    menuPlan: { breakfast: null, lunch: null, dinner: null },
   };
 }

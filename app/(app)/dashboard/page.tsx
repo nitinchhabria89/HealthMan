@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 import Header from "@/components/ui/Header";
 import Card from "@/components/ui/Card";
@@ -53,6 +54,15 @@ export default function DashboardPage() {
               className="w-20 bg-innerBg border border-borderLight rounded-input px-2 py-1 text-text text-sm text-center outline-none focus:border-blue disabled:opacity-50"
             />
             <span className="text-textDim text-xs">kcal</span>
+          </div>
+        </Card>
+
+        <Card>
+          <div className="flex items-center justify-between">
+            <span className="label">Today&apos;s Menu</span>
+            <Link href="/menu" className="text-xs text-blue">
+              Plan meals →
+            </Link>
           </div>
         </Card>
 

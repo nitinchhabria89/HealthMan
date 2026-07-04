@@ -36,6 +36,8 @@ All types in `lib/types.ts`. KV helpers in `lib/kv.ts` (`getDay`, `setDay`, `get
 
 `Workout` is a set of yes/no activity flags: `{ walk, yoga, gym, running, tennis, badminton, pickleball }`, plus two optional numeric fields (`steps` for walk, `runningKm` for running). There is no `done`/`type`/`duration`/`intensity`/`notes`/`caloriesBurned` — that richer form existed originally but was explicitly replaced (not extended) per user request, then the activity list was expanded once more per the user's own coach-inspired ask. Anywhere that needs "was there a workout today" — `components/workout/WeekView.tsx`, `hooks/useReportData.ts`, `components/reports/WorkoutHeatmap.tsx`, the coach system prompt — must call `isWorkoutDay(workout)` from `lib/types.ts` rather than re-deriving the OR chain; adding an 8th activity later only means updating that one helper.
 
+`DayLog.menuPlan` (`{ breakfast, lunch, dinner }`, each a `MenuSlot`) is deliberately separate from `DayLog.meals` — `menuPlan` is *what you decided to cook* (for telling the maid, planned via `/menu`, `components/menu/MenuSlotCard.tsx`), `meals` is *what was actually eaten* (logged via the Food page). A `MenuSlot` can be "Log[ged] as eaten" which appends to `meals` and flips its own `logged: true`, but the two arrays are never the same data — don't collapse them into one concept.
+
 `MealPreset` (`{ id, name, calories, type }`) is a separate KV entity from `DayLog`, keyed `{email}:health:mealPresets` (one array per user, not per day) — `getMealPresets`/`setMealPresets` in `lib/kv.ts`, `useMealPresets` hook, `/api/health/meal-presets` route. Lets frequently-eaten meals be saved once (via `AddMealForm`'s "☆ Save" button) and re-added with a single tap from the Food page's Presets chip list, skipping the AI estimate step since calories are already known.
 
 ## Known gotchas
@@ -58,7 +60,7 @@ All types in `lib/types.ts`. KV helpers in `lib/kv.ts` (`getDay`, `setDay`, `get
 - Logo: `components/ui/Logo.tsx` exports `LogoIcon` (blue rounded-square "N" mark) and `LogoFull` (icon + "NITIN CHHABRIA" wordmark, dark/blue two-tone). `LogoFull` on the login page, `LogoIcon` in every in-app `Header`. This is Nitin's personal brand mark reused intentionally — don't swap for a generic health/fitness icon.
 - Mobile-first, `max-w-app` (560px) centered, `px-4` page padding.
 - Multi-field rows (name + amount + button, etc.) need explicit `w-*`/`shrink-0`/`min-w-0` — plain `flex-1` siblings will overflow off-screen at 375px width once you add a 3rd element to a row. Bit us twice (`AddMealForm`, `MedicineLogger`) before landing on this rule.
-- Bottom tab bar (`components/ui/TabBar.tsx`): 6 tabs — Today/Food/Health/Workout/Coach/Reports, deliberately fixed. Sub-pages that don't warrant a 7th tab (e.g. `/weight`) are reached via a link from whichever Dashboard card they detail, and use `Header`'s `backHref` prop to render a "← Back" link instead of adding nav real estate.
+- Bottom tab bar (`components/ui/TabBar.tsx`): 6 tabs — Today/Food/Health/Workout/Coach/Reports, deliberately fixed. Sub-pages that don't warrant a 7th tab (e.g. `/weight`, `/menu`) are reached via a link from whichever Dashboard card they detail, and use `Header`'s `backHref` prop to render a "← Back" link instead of adding nav real estate.
 
 ## File structure
 
