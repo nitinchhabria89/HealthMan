@@ -3,14 +3,13 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html,
 body {
-  background: #08111e;
-  color: #e8f4ff;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
 }
 
 @layer utilities {
@@ -18,6 +17,6 @@ body {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.09em;
-    color: #4b6080;
+    color: #64748b;
   }
 }

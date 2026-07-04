@@ -1,15 +1,15 @@
 import type { CountItem } from "@/hooks/useReportData";
 
 function colorFor(count: number): string {
-  if (count >= 5) return "#EF4444";
-  if (count >= 3) return "#FBBF24";
-  return "#4ADE80";
+  if (count >= 5) return "#DC2626";
+  if (count >= 3) return "#D97706";
+  return "#16A34A";
 }
 
 export default function SymptomFrequency({ items }: { items: CountItem[] }) {
   if (items.length === 0) {
     return (
-      <div className="bg-surface border border-border rounded-card p-4">
+      <div className="bg-surface border border-border rounded-card shadow-card p-4">
         <span className="label">Symptom Frequency</span>
         <p className="text-textDim text-sm mt-3">No symptoms logged</p>
       </div>
@@ -19,7 +19,7 @@ export default function SymptomFrequency({ items }: { items: CountItem[] }) {
   const max = items[0].count;
 
   return (
-    <div className="bg-surface border border-border rounded-card p-4">
+    <div className="bg-surface border border-border rounded-card shadow-card p-4">
       <span className="label">Symptom Frequency</span>
       <div className="mt-3 space-y-2.5">
         {items.map((item) => {

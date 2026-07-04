@@ -37,7 +37,7 @@ export default function ReportsPage() {
 
   const target = profile.calorieTarget || 2000;
   const calorieRatio = target > 0 ? data.avgCalories / target : 0;
-  const calorieColor = calorieRatio >= 1 ? "#EF4444" : calorieRatio >= 0.8 ? "#FBBF24" : "#4ADE80";
+  const calorieColor = calorieRatio >= 1 ? "#DC2626" : calorieRatio >= 0.8 ? "#D97706" : "#16A34A";
 
   return (
     <div>
@@ -51,11 +51,11 @@ export default function ReportsPage() {
           <StatCard
             label="Workout Consistency"
             value={`${data.workoutConsistencyPct}%`}
-            color="#4ADE80"
+            color="#16A34A"
           />
-          <StatCard label="Workout Streak" value={`${data.workoutStreak}d`} color="#4ADE80" />
+          <StatCard label="Workout Streak" value={`${data.workoutStreak}d`} color="#16A34A" />
           <StatCard label="Avg Calories" value={`${data.avgCalories} kcal`} color={calorieColor} />
-          <StatCard label="Avg Water" value={`${data.avgWater} glasses`} color="#38BDF8" />
+          <StatCard label="Avg Water" value={`${data.avgWater} glasses`} color="#0056D2" />
           <StatCard
             label="Weight"
             value={
@@ -71,7 +71,7 @@ export default function ReportsPage() {
         <WorkoutHeatmap dates={data.dates} days={data.days} />
         <SymptomFrequency items={data.symptomCounts} />
 
-        <div className="bg-surface border border-border rounded-card p-4">
+        <div className="bg-surface border border-border rounded-card shadow-card p-4">
           <span className="label">Medicine Usage</span>
           {data.medicineCounts.length === 0 ? (
             <p className="text-textDim text-sm mt-3">No medicines logged</p>
@@ -90,7 +90,7 @@ export default function ReportsPage() {
           )}
         </div>
 
-        <div className="bg-surface border border-border rounded-card p-4">
+        <div className="bg-surface border border-border rounded-card shadow-card p-4">
           <span className="label">Mood Distribution</span>
           {data.moodCounts.length === 0 ? (
             <p className="text-textDim text-sm mt-3">No moods logged</p>

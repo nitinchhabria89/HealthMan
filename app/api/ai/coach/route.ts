@@ -21,10 +21,18 @@ export async function POST(req: NextRequest) {
 
   const consumed = (dayContext?.meals || []).reduce((s, m) => s + m.calories, 0);
   const symptomsText = (dayContext?.symptoms || []).map((s) => s.text).join(", ") || "none";
+  const targetGlasses = Math.round(((profile.waterGoalLiters || 3) * 1000) / (profile.glassSizeMl || 250));
+  const workoutParts = [
+    dayContext?.workout?.walk
+      ? `walked${dayContext.workout.steps ? ` (${dayContext.workout.steps} steps)` : ""}`
+      : null,
+    dayContext?.workout?.yoga ? "did yoga" : null,
+  ].filter(Boolean);
+  const workoutText = workoutParts.length ? workoutParts.join(", ") : "no workout logged";
 
   const systemPrompt = `You are a supportive personal health & fitness coach embedded in a private health tracker app.
 User profile: ${profile.name}, ${profile.age}yo ${profile.gender}, height ${profile.height}cm, current weight ${profile.currentWeight}kg, target weight ${profile.targetWeight}kg, daily calorie target ${profile.calorieTarget}kcal.
-Today so far: ${consumed}kcal consumed, workout ${dayContext?.workout?.done ? `done (${dayContext.workout.type}, ${dayContext.workout.duration}min)` : "not done"}, water ${dayContext?.water ?? 0}/8 glasses, mood ${dayContext?.mood || "not set"}, symptoms: ${symptomsText}.
+Today so far: ${consumed}kcal consumed, workout: ${workoutText}, water ${dayContext?.water ?? 0}/${targetGlasses} glasses, mood ${dayContext?.mood || "not set"}, symptoms: ${symptomsText}.
 Be practical, warm, and concise. Use Indian food and lifestyle context where relevant. Do not diagnose medical conditions; suggest seeing a doctor for anything serious.`;
 
   try {

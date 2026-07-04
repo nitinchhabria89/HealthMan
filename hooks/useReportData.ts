@@ -38,12 +38,14 @@ function aggregate(dates: string[], days: DayLog[], loggedDates: Set<string>): R
   const totalDays = dates.length;
   const loggedDays = dates.filter((d) => loggedDates.has(d)).length;
 
-  const workoutDays = days.filter((d) => d.workout?.done).length;
+  const isActiveDay = (d: DayLog) => !!(d.workout?.walk || d.workout?.yoga);
+
+  const workoutDays = days.filter(isActiveDay).length;
   const workoutConsistencyPct = totalDays > 0 ? Math.round((workoutDays / totalDays) * 100) : 0;
 
   let workoutStreak = 0;
   for (let i = days.length - 1; i >= 0; i--) {
-    if (days[i].workout?.done) workoutStreak++;
+    if (isActiveDay(days[i])) workoutStreak++;
     else break;
   }
 

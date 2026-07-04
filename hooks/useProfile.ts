@@ -6,11 +6,13 @@ import type { Profile } from "@/lib/types";
 const DEFAULT_PROFILE: Profile = {
   name: "",
   currentWeight: 0,
-  targetWeight: 0,
+  targetWeight: 72,
   height: 0,
   age: 0,
-  calorieTarget: 2000,
+  calorieTarget: 1800,
   gender: "male",
+  waterGoalLiters: 3,
+  glassSizeMl: 250,
 };
 
 export function useProfile() {

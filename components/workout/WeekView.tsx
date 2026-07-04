@@ -18,7 +18,7 @@ export default function WeekView() {
         if (cancelled) return;
         const next: Record<string, boolean> = {};
         logs.forEach((log, i) => {
-          next[dates[i]] = !!log?.workout?.done;
+          next[dates[i]] = !!(log?.workout?.walk || log?.workout?.yoga);
         });
         setStatuses(next);
       })
@@ -30,7 +30,7 @@ export default function WeekView() {
   }, []);
 
   return (
-    <div className="bg-surface border border-border rounded-card p-4">
+    <div className="bg-surface border border-border rounded-card shadow-card p-4">
       <span className="label">This Week</span>
       <div className="flex gap-2 mt-3">
         {dates.map((d, i) => {
@@ -41,11 +41,11 @@ export default function WeekView() {
               <div
                 className="w-full aspect-square rounded-input flex items-center justify-center"
                 style={{
-                  background: done ? "rgba(74,222,128,0.15)" : "#0B1626",
-                  border: `1px solid ${isToday ? "#4ADE80" : done ? "#4ADE80" : "#1E3050"}`,
+                  background: done ? "rgba(22,163,74,0.1)" : "#F1F5F9",
+                  border: `1px solid ${isToday ? "#16A34A" : done ? "#16A34A" : "#EDF1F5"}`,
                 }}
               >
-                <span style={{ color: done ? "#4ADE80" : "#4B6080", fontSize: 12 }}>
+                <span style={{ color: done ? "#16A34A" : "#64748B", fontSize: 12 }}>
                   {done ? "✓" : "·"}
                 </span>
               </div>

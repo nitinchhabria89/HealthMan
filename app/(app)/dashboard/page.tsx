@@ -63,7 +63,13 @@ export default function DashboardPage() {
           readonly={readonly}
         />
 
-        <WaterTracker water={day.water} onChange={(n) => update({ water: n })} readonly={readonly} />
+        <WaterTracker
+          water={day.water}
+          targetGlasses={Math.round(((profile.waterGoalLiters || 3) * 1000) / (profile.glassSizeMl || 250))}
+          glassSizeMl={profile.glassSizeMl || 250}
+          onChange={(n) => update({ water: n })}
+          readonly={readonly}
+        />
 
         <TodaySummary symptoms={day.symptoms} medicines={day.medicines} />
 

@@ -89,9 +89,9 @@ export default function ChatInterface({
             <div
               className="max-w-[80%] rounded-input px-3 py-2 text-sm whitespace-pre-wrap"
               style={{
-                background: m.role === "user" ? "rgba(56,189,248,0.15)" : "#0D1B2A",
-                border: `1px solid ${m.role === "user" ? "#38BDF8" : "#162033"}`,
-                color: "#E8F4FF",
+                background: m.role === "user" ? "rgba(0,86,210,0.08)" : "#FFFFFF",
+                border: `1px solid ${m.role === "user" ? "#0056D2" : "#E2E8F0"}`,
+                color: "#0F172A",
               }}
             >
               {m.content || (loading && i === messages.length - 1 ? "..." : "")}

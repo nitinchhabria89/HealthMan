@@ -25,7 +25,7 @@ export default function MedicineLogger({
   }
 
   return (
-    <div className="bg-surface border border-border rounded-card p-4 space-y-3">
+    <div className="bg-surface border border-border rounded-card shadow-card p-4 space-y-3">
       <span className="label">Medicines</span>
 
       {!readonly && (
@@ -34,18 +34,18 @@ export default function MedicineLogger({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Medicine name"
-            className="flex-1 bg-innerBg border border-borderLight rounded-input px-3 py-2 text-text text-sm outline-none focus:border-blue"
+            className="flex-1 min-w-0 bg-innerBg border border-borderLight rounded-input px-3 py-2 text-text text-sm outline-none focus:border-blue"
           />
           <input
             value={dose}
             onChange={(e) => setDose(e.target.value)}
             placeholder="Dose"
-            className="w-24 bg-innerBg border border-borderLight rounded-input px-3 py-2 text-text text-sm outline-none focus:border-blue"
+            className="w-16 shrink-0 bg-innerBg border border-borderLight rounded-input px-2 py-2 text-text text-sm outline-none focus:border-blue"
           />
           <button
             onClick={submit}
             disabled={!name}
-            className="bg-purple text-bg rounded-btn px-4 text-sm font-medium disabled:opacity-50"
+            className="shrink-0 bg-purple text-bg rounded-btn px-3 text-sm font-medium disabled:opacity-50"
           >
             Add
           </button>

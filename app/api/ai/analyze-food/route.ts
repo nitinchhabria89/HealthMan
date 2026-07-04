@@ -10,33 +10,45 @@ export async function POST(req: NextRequest) {
   const writeErr = requireWriteAccess(session);
   if (writeErr) return writeErr;
 
-  const { image, mimeType, calorieTarget } = (await req.json()) as {
+  const { image, mimeType, description, calorieTarget } = (await req.json()) as {
     image?: string;
     mimeType?: string;
+    description?: string;
     calorieTarget?: number;
   };
 
-  if (!image || !mimeType || !ALLOWED_MIME.includes(mimeType)) {
-    return NextResponse.json({ error: "Invalid image" }, { status: 400 });
+  const hasImage = !!image && !!mimeType && ALLOWED_MIME.includes(mimeType);
+  const hasDescription = !!description?.trim();
+
+  if (!hasImage && !hasDescription) {
+    return NextResponse.json({ error: "Provide an image or a description" }, { status: 400 });
   }
 
   try {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const systemPrompt = `You are a nutrition assistant for a personal health tracker. ${
+      hasImage
+        ? "Identify the food items in the photo"
+        : "Given a short text description of a meal, identify the likely food items"
+    }, estimate total calories, and give a short one-line verdict relative to a daily calorie target of ${calorieTarget ?? 2000} kcal. Be concise and practical, aware of Indian food. End your response with a line in the exact format: "ESTIMATED_CALORIES: <number>".`;
+
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       max_tokens: 500,
       messages: [
-        {
-          role: "system",
-          content: `You are a nutrition assistant for a personal health tracker. Identify the food items in the photo, estimate total calories, and give a short one-line verdict relative to a daily calorie target of ${calorieTarget ?? 2000} kcal. Be concise and practical, aware of Indian food. End your response with a line in the exact format: "ESTIMATED_CALORIES: <number>".`,
-        },
-        {
-          role: "user",
-          content: [
-            { type: "text", text: "What is this food and how many calories does it have?" },
-            { type: "image_url", image_url: { url: `data:${mimeType};base64,${image}` } },
-          ],
-        },
+        { role: "system", content: systemPrompt },
+        hasImage
+          ? {
+              role: "user",
+              content: [
+                { type: "text", text: "What is this food and how many calories does it have?" },
+                { type: "image_url", image_url: { url: `data:${mimeType};base64,${image}` } },
+              ],
+            }
+          : {
+              role: "user",
+              content: `Meal description: ${description}\nHow many calories does this have?`,
+            },
       ],
     });
 

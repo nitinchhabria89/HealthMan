@@ -40,23 +40,3 @@ export function lastNDates(n: number): string[] {
   }
   return dates;
 }
-
-const MET_BY_TYPE: Record<string, number> = {
-  walking: 3.5,
-  running: 9.8,
-  cycling: 7.5,
-  swimming: 8,
-  yoga: 2.5,
-  strength: 5,
-  hiit: 8,
-  cardio: 7,
-  pilates: 3,
-  sports: 6,
-  dance: 5,
-  other: 4,
-};
-
-export function estimateCaloriesBurned(type: string, durationMinutes: number, weightKg = 75): number {
-  const met = MET_BY_TYPE[type.toLowerCase()] ?? MET_BY_TYPE.other;
-  return Math.round(met * 3.5 * weightKg / 200 * durationMinutes);
-}

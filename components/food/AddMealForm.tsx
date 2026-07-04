@@ -6,13 +6,17 @@ import type { MealType } from "@/lib/types";
 const TYPES: MealType[] = ["breakfast", "lunch", "dinner", "snack", "drink"];
 
 export default function AddMealForm({
+  calorieTarget,
   onAdd,
 }: {
+  calorieTarget: number;
   onAdd: (name: string, calories: number, type: MealType) => void;
 }) {
   const [name, setName] = useState("");
   const [calories, setCalories] = useState("");
   const [type, setType] = useState<MealType>("snack");
+  const [estimating, setEstimating] = useState(false);
+  const [estimateError, setEstimateError] = useState("");
 
   function submit() {
     if (!name || !calories) return;
@@ -21,13 +25,33 @@ export default function AddMealForm({
     setCalories("");
   }
 
+  async function estimate() {
+    if (!name.trim()) return;
+    setEstimating(true);
+    setEstimateError("");
+    try {
+      const res = await fetch("/api/ai/analyze-food", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description: name, calorieTarget }),
+      });
+      if (!res.ok) throw new Error("failed");
+      const data = await res.json();
+      setCalories(String(data.estimatedCalories));
+    } catch {
+      setEstimateError("Couldn't estimate. Enter calories manually.");
+    } finally {
+      setEstimating(false);
+    }
+  }
+
   return (
-    <div className="bg-surface border border-border rounded-card p-4 space-y-3">
-      <span className="label">Add Meal Manually</span>
+    <div className="bg-surface border border-border rounded-card shadow-card p-4 space-y-3">
+      <span className="label">Add Meal</span>
       <input
         value={name}
         onChange={(e) => setName(e.target.value)}
-        placeholder="Meal name"
+        placeholder="Meal name or description"
         className="w-full bg-innerBg border border-borderLight rounded-input px-3 py-2 text-text text-sm outline-none focus:border-blue"
       />
       <div className="flex gap-2">
@@ -36,12 +60,19 @@ export default function AddMealForm({
           value={calories}
           onChange={(e) => setCalories(e.target.value)}
           placeholder="kcal"
-          className="flex-1 bg-innerBg border border-borderLight rounded-input px-3 py-2 text-text text-sm outline-none focus:border-blue"
+          className="w-24 bg-innerBg border border-borderLight rounded-input px-3 py-2 text-text text-sm outline-none focus:border-blue"
         />
+        <button
+          onClick={estimate}
+          disabled={!name.trim() || estimating}
+          className="shrink-0 text-blue text-xs border border-blue rounded-btn px-3 disabled:opacity-50"
+        >
+          {estimating ? "Estimating..." : "Estimate"}
+        </button>
         <select
           value={type}
           onChange={(e) => setType(e.target.value as MealType)}
-          className="flex-1 bg-innerBg border border-borderLight rounded-input px-3 py-2 text-text text-sm outline-none"
+          className="flex-1 min-w-0 bg-innerBg border border-borderLight rounded-input px-2 py-2 text-text text-sm outline-none"
         >
           {TYPES.map((t) => (
             <option key={t} value={t}>
@@ -50,6 +81,7 @@ export default function AddMealForm({
           ))}
         </select>
       </div>
+      {estimateError && <p className="text-red text-xs">{estimateError}</p>}
       <button
         onClick={submit}
         disabled={!name || !calories}

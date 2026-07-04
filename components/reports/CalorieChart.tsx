@@ -18,22 +18,22 @@ export default function CalorieChart({
     const consumed = day?.meals.reduce((s, m) => s + m.calories, 0) || 0;
     const target = day?.calorieTarget ?? defaultTarget;
     const ratio = target > 0 ? consumed / target : 0;
-    const color = ratio >= 1 ? "#EF4444" : ratio >= 0.8 ? "#FBBF24" : "#4ADE80";
+    const color = ratio >= 1 ? "#DC2626" : ratio >= 0.8 ? "#D97706" : "#16A34A";
     return { date, label: formatDisplayDate(date), consumed, color };
   });
 
   return (
-    <div className="bg-surface border border-border rounded-card p-4">
+    <div className="bg-surface border border-border rounded-card shadow-card p-4">
       <span className="label">Daily Calories</span>
       <div className="mt-3" style={{ width: "100%", height: 180 }}>
         <ResponsiveContainer>
           <BarChart data={data}>
-            <XAxis dataKey="label" tick={{ fill: "#4B6080", fontSize: 10 }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
-            <YAxis tick={{ fill: "#4B6080", fontSize: 10 }} axisLine={false} tickLine={false} width={32} />
+            <XAxis dataKey="label" tick={{ fill: "#64748B", fontSize: 10 }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+            <YAxis tick={{ fill: "#64748B", fontSize: 10 }} axisLine={false} tickLine={false} width={32} />
             <Tooltip
-              contentStyle={{ background: "#08111E", border: "1px solid #162033", borderRadius: 8 }}
-              labelStyle={{ color: "#E8F4FF" }}
-              itemStyle={{ color: "#4B6080" }}
+              contentStyle={{ background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: 8 }}
+              labelStyle={{ color: "#0F172A" }}
+              itemStyle={{ color: "#64748B" }}
             />
             <Bar dataKey="consumed" radius={[4, 4, 0, 0]}>
               {data.map((d, i) => (

@@ -59,7 +59,7 @@ export default function PhotoUpload({
   }
 
   return (
-    <div className="bg-surface border border-border rounded-card p-4">
+    <div className="bg-surface border border-border rounded-card shadow-card p-4">
       <span className="label">Photo Analysis</span>
 
       {!preview && (

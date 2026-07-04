@@ -27,12 +27,9 @@ export type Medicine = {
 };
 
 export type Workout = {
-  done: boolean;
-  type: string;
-  duration: string;
-  intensity: string;
-  notes: string;
-  caloriesBurned?: number;
+  walk: boolean;
+  steps: number | null;
+  yoga: boolean;
 };
 
 export type DayLog = {
@@ -58,6 +55,8 @@ export type Profile = {
   age: number;
   calorieTarget: number;
   gender: Gender;
+  waterGoalLiters: number;
+  glassSizeMl: number;
 };
 
 export type Role = "owner" | "readonly";
@@ -74,11 +73,9 @@ export type ChatMessage = {
 };
 
 export const EMPTY_WORKOUT: Workout = {
-  done: false,
-  type: "",
-  duration: "",
-  intensity: "",
-  notes: "",
+  walk: false,
+  steps: null,
+  yoga: false,
 };
 
 export function emptyDayLog(date: string): DayLog {

@@ -15,12 +15,12 @@ export default function CalorieRing({
   const ratio = target > 0 ? consumed / target : 0;
   const pct = Math.min(ratio, 1);
   const offset = c * (1 - pct);
-  const color = ratio >= 1 ? "#EF4444" : ratio >= 0.8 ? "#FBBF24" : "#4ADE80";
+  const color = ratio >= 1 ? "#DC2626" : ratio >= 0.8 ? "#D97706" : "#16A34A";
 
   return (
     <div className="relative flex items-center justify-center mx-auto" style={{ width: size, height: size }}>
       <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="#162033" strokeWidth={stroke} fill="none" />
+        <circle cx={size / 2} cy={size / 2} r={r} stroke="#E2E8F0" strokeWidth={stroke} fill="none" />
         <circle
           cx={size / 2}
           cy={size / 2}

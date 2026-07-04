@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { LogoFull } from "@/components/ui/Logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -35,16 +36,18 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-app">
-        <h1 className="text-xl font-semibold text-text mb-1">
-          {process.env.NEXT_PUBLIC_APP_NAME || "Health Tracker"}
-        </h1>
-        <p className="text-textMuted text-sm mb-8">Sign in to continue</p>
+        <div className="mb-8">
+          <LogoFull />
+          <p className="text-textMuted text-sm mt-3">
+            {process.env.NEXT_PUBLIC_APP_NAME || "Health Tracker"} · Sign in to continue
+          </p>
+        </div>
 
         <div
           onKeyDown={(e) => {
             if (e.key === "Enter") handleSubmit(e as unknown as React.FormEvent);
           }}
-          className="bg-surface border border-border rounded-card p-5 space-y-4"
+          className="bg-surface border border-border rounded-card shadow-card p-5 space-y-4"
         >
           <div>
             <label className="label mb-1 block">Email</label>
@@ -74,7 +77,7 @@ export default function LoginPage() {
           <button
             onClick={handleSubmit}
             disabled={loading || !email || !password}
-            className="w-full bg-green text-bg font-medium rounded-btn py-2.5 text-sm disabled:opacity-50"
+            className="w-full bg-blue text-white font-medium rounded-btn py-2.5 text-sm disabled:opacity-50"
           >
             {loading ? "Signing in..." : "Sign in"}
           </button>

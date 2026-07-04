@@ -10,7 +10,7 @@ export default function MoodPicker({
   readonly: boolean;
 }) {
   return (
-    <div className="bg-surface border border-border rounded-card p-4">
+    <div className="bg-surface border border-border rounded-card shadow-card p-4">
       <span className="label">Mood</span>
       <div className="flex flex-wrap gap-2 mt-3">
         {MOODS.map((m) => {
@@ -22,9 +22,9 @@ export default function MoodPicker({
               onClick={() => onChange(m)}
               className="text-xs rounded-btn px-3 py-1.5 border"
               style={{
-                borderColor: active ? "#4ADE80" : "#1E3050",
-                background: active ? "rgba(74,222,128,0.15)" : "#0B1626",
-                color: active ? "#4ADE80" : "#8A9AB0",
+                borderColor: active ? "#16A34A" : "#EDF1F5",
+                background: active ? "rgba(22,163,74,0.1)" : "#F1F5F9",
+                color: active ? "#16A34A" : "#94A3B8",
               }}
             >
               {m}

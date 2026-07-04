@@ -39,7 +39,7 @@ export default function SymptomLogger({
   }
 
   return (
-    <div className="bg-surface border border-border rounded-card p-4 space-y-4">
+    <div className="bg-surface border border-border rounded-card shadow-card p-4 space-y-4">
       <span className="label">Symptoms</span>
 
       {!readonly && (

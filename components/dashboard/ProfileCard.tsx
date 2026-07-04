@@ -81,6 +81,21 @@ export default function ProfileCard({
                   placeholder="Calorie target"
                   className="bg-innerBg border border-borderLight rounded-input px-3 py-2 text-text text-sm outline-none focus:border-blue"
                 />
+                <input
+                  type="number"
+                  step="0.1"
+                  value={profile.waterGoalLiters || ""}
+                  onChange={(e) => onUpdate({ waterGoalLiters: Number(e.target.value) })}
+                  placeholder="Water goal (L)"
+                  className="bg-innerBg border border-borderLight rounded-input px-3 py-2 text-text text-sm outline-none focus:border-blue"
+                />
+                <input
+                  type="number"
+                  value={profile.glassSizeMl || ""}
+                  onChange={(e) => onUpdate({ glassSizeMl: Number(e.target.value) })}
+                  placeholder="Glass size (ml)"
+                  className="bg-innerBg border border-borderLight rounded-input px-3 py-2 text-text text-sm outline-none focus:border-blue"
+                />
               </div>
             </>
           ) : (

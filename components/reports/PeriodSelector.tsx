@@ -21,8 +21,8 @@ export default function PeriodSelector({
             onClick={() => onChange(p.value)}
             className="flex-1 text-xs font-medium rounded-btn py-2 transition-colors"
             style={{
-              background: active ? "#4ADE80" : "transparent",
-              color: active ? "#08111E" : "#8A9AB0",
+              background: active ? "#0056D2" : "transparent",
+              color: active ? "#FFFFFF" : "#94A3B8",
             }}
           >
             {p.label}

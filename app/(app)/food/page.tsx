@@ -57,15 +57,15 @@ export default function FoodPage() {
       <Header title="Food" error={error} />
 
       <div className="space-y-4">
-        <div className="bg-surface border border-border rounded-card p-4 flex items-center justify-between">
+        <div className="bg-surface border border-border rounded-card shadow-card p-4 flex items-center justify-between">
           <span className="label">Today&apos;s Total</span>
           <span className={`text-lg font-semibold ${color}`}>
             {consumed} / {target} kcal
           </span>
         </div>
 
+        {!readonly && <AddMealForm calorieTarget={target} onAdd={addMeal} />}
         {!readonly && <PhotoUpload calorieTarget={target} onConfirm={addPhotoMeal} />}
-        {!readonly && <AddMealForm onAdd={addMeal} />}
 
         <MealList meals={day.meals} onDelete={readonly ? () => {} : deleteMeal} />
       </div>

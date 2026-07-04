@@ -32,6 +32,10 @@ KV keys, namespaced per user email:
 
 All types in `lib/types.ts`. KV helpers in `lib/kv.ts` (`getDay`, `setDay`, `getProfile`, `setProfile`, `listDayDates`, `getDays`).
 
+`Profile` includes `waterGoalLiters` (default 3) and `glassSizeMl` (default 250) — the water tracker's target glass count is *derived* (`round(waterGoalLiters * 1000 / glassSizeMl)`), never hardcoded. Default profile (`hooks/useProfile.ts`'s `DEFAULT_PROFILE`) is Nitin's actual goals: 72kg target weight, 1800kcal, 3L water — these are real values from the user, not placeholders, don't "fix" them back to generic defaults.
+
+`Workout` is intentionally minimal: `{ walk: boolean, steps: number | null, yoga: boolean }`. There is no `done`/`type`/`duration`/`intensity`/`notes`/`caloriesBurned` — that richer form existed originally but was explicitly replaced (not extended) per user request. Anywhere that needs "was there a workout today" (WeekView, Reports consistency/streak, coach system prompt) computes it as `workout.walk || workout.yoga` — there's no stored `done` flag to read.
+
 ## Known gotchas
 
 - **Env var changes need a dev server restart.** Next.js only reads `.env.local` at process startup — editing `KV_REST_API_URL`/`TOKEN` (or any env var) and expecting a running `next dev` to pick it up won't work. Kill and restart.
@@ -44,11 +48,14 @@ All types in `lib/types.ts`. KV helpers in `lib/kv.ts` (`getDay`, `setDay`, `get
 
 ## Design system — exact values, no deviations
 
-Colors live in `tailwind.config.ts` as named tokens (`bg`, `surface`, `border`, `borderLight`, `innerBg`, `green`, `blue`, `amber`, `red`, `purple`, `text`, `textMuted`, `textDim`). Always use the token names, never hardcode hex in new components except where Recharts requires inline style props (it doesn't read Tailwind classes for SVG fill/stroke).
+**Light theme, Inter font** — matches thecuriouspm.com (Nitin's personal site) by explicit request. Colors live in `tailwind.config.ts` as named tokens (`bg` #F8FAFC, `surface` white, `border` #E2E8F0, `borderLight`, `innerBg` #F1F5F9, `green` #16A34A, `blue` #0056D2 — the site's accent, `amber` #D97706, `red` #DC2626, `purple` #7C3AED, `text` #0F172A, `textMuted` #64748B, `textDim` #94A3B8). Always use the token names, never hardcode hex in new components except where Recharts requires inline style props (it doesn't read Tailwind classes for SVG fill/stroke) — if you do, match these exact values, don't reintroduce the old dark-mode hex (`#08111E`, `#4ADE80`, `#38BDF8`, etc.) by copy-paste.
 
-- Cards: `rounded-card` (18px). Buttons: `rounded-btn` (12px). Inputs: `rounded-input` (10px).
+- Cards: `rounded-card` (20px) + `shadow-card` (soft shadow, not a hard border, for elevation — `components/ui/Card.tsx` applies both). Buttons: `rounded-btn` (12px). Inputs: `rounded-input` (10px).
 - Labels: use the `.label` utility class (11px uppercase, 0.09em tracking, `textMuted`).
+- Font is Inter via `next/font/google` in `app/layout.tsx` (`--font-inter` CSS var, wired into Tailwind's `font-sans`) — not Geist, not a local font file.
+- Logo: `components/ui/Logo.tsx` exports `LogoIcon` (blue rounded-square "N" mark) and `LogoFull` (icon + "NITIN CHHABRIA" wordmark, dark/blue two-tone). `LogoFull` on the login page, `LogoIcon` in every in-app `Header`. This is Nitin's personal brand mark reused intentionally — don't swap for a generic health/fitness icon.
 - Mobile-first, `max-w-app` (560px) centered, `px-4` page padding.
+- Multi-field rows (name + amount + button, etc.) need explicit `w-*`/`shrink-0`/`min-w-0` — plain `flex-1` siblings will overflow off-screen at 375px width once you add a 3rd element to a row. Bit us twice (`AddMealForm`, `MedicineLogger`) before landing on this rule.
 - Bottom tab bar (`components/ui/TabBar.tsx`): 6 tabs — Today/Food/Health/Workout/Coach/Reports.
 
 ## File structure
@@ -70,6 +77,7 @@ Colors live in `tailwind.config.ts` as named tokens (`bg`, `surface`, `border`, 
 - All mutations autosave: `useDay`/`useProfile` hooks POST on every `update()` call, no explicit save flow except Workout page's confirmation button (cosmetic, spec-required).
 - AI routes never take write access from readonly (doctor) sessions except `symptom-advice` and `report`, which are informational and allowed for the doctor by design.
 - Meal/symptom/medicine IDs: `crypto.randomUUID()`, client-generated.
+- `/api/ai/analyze-food` accepts *either* `{ image, mimeType }` (photo) *or* `{ description }` (text-only, e.g. "2 boiled eggs and a banana") — the description path skips the vision call and asks the model to estimate calories from the text directly. `AddMealForm`'s "Estimate" button uses the text path; `PhotoUpload` uses the image path. Same route, same response shape (`{ analysis, estimatedCalories }`).
 - Report aggregation (`hooks/useReportData.ts`) fetches `/api/health/keys` (for accurate "days logged" count) *and* every day in the period in parallel (for chart continuity, including gap days) — don't collapse this into one fetch, they serve different purposes.
 
 ## Environment variables
@@ -78,7 +86,7 @@ See `.env.example`. Full setup (bcrypt hash generation, Vercel KV provisioning, 
 
 ## Build status
 
-All 6 pages, 4 AI routes, and the health/profile/keys API are implemented and build clean (`npm run build`). Auth flow (login → protected routes → doctor 403 on writes → sign out) verified live. Actual data persistence and AI features are untested against real Vercel KV / OpenAI credentials — `.env.local` currently holds dev-only placeholder values.
+All 6 pages, 4 AI routes, and the health/profile/keys API are implemented and build clean (`npm run build`). Auth flow (login → protected routes → doctor 403 on writes → sign out), real data persistence (Upstash Redis), and AI features (OpenAI) have all been verified live end-to-end via the preview browser tooling, not just build/type checks.
 
 ## Provider note
 
