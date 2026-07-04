@@ -18,11 +18,14 @@ Private, personal health tracker for 3 users only (owner, spouse, read-only doct
 
 Doctor is a special case: always views **Nitin's** data, never their own namespace, and is blocked (403) from all writes. This resolution happens in `getDataOwnerEmail()` in `lib/auth.ts`, used by every API route via `lib/api-auth.ts`'s `requireSession()`.
 
-**Config is split across two files** — this matters, don't merge them back together:
-- `lib/auth.config.ts` — edge-safe (no bcrypt/Node APIs), used by `middleware.ts`
-- `lib/auth.ts` — full config with the Credentials provider (bcrypt), used by API routes and server components
+**No `middleware.ts` — deliberately removed.** Originally had edge middleware doing a fast auth redirect (using an edge-safe `lib/auth.config.ts`, split out from the full `lib/auth.ts` to dodge bcrypt breaking the edge runtime bundle). On the production custom domain (Vercel), that edge-instantiated `NextAuth(authConfig).auth` resolved `req.auth` as truthy with **zero cookies present** — while the real auth check (`lib/auth.ts`'s `auth()`, used by `app/(app)/layout.tsx`) correctly saw no session. The two disagreeing created an infinite redirect loop (`/login` → middleware thinks logged in → `/dashboard` → layout thinks logged out → `/login` → ...), `ERR_TOO_MANY_REDIRECTS` for every visitor. Reproduced locally-inexplicable: worked perfectly in dev the entire build, broke only on the deployed custom domain. Root cause not fully isolated (likely a secure-cookie/host-trust mismatch specific to the two separately-instantiated NextAuth objects), but the real fix is architectural: the two redundant auth checks should never have been able to disagree in the first place.
 
-Bcrypt in `middleware.ts` breaks the edge runtime bundle (`setImmediate` not supported). If auth logic changes, keep write-provider logic out of the edge-safe config.
+Auth enforcement now lives in exactly two places, both using the one full `lib/auth.ts` config, nothing edge-runtime-special:
+- `app/(app)/layout.tsx` — server component, redirects to `/login` if no session. Sole gate for all protected pages.
+- `lib/api-auth.ts`'s `requireSession()` — called by every API route individually, returns 401 if no session.
+- `app/(auth)/login/page.tsx` also client-redirects to `/dashboard` if `useSession()` reports already-authenticated (replaces middleware's old "bounce logged-in users away from /login" behavior).
+
+`lib/auth.config.ts` still exists and is still imported by `lib/auth.ts` (`{ ...authConfig, providers: [...] }`) — it's just no longer *also* separately instantiated for an edge runtime. If you reintroduce middleware for auth, re-verify session resolution matches `lib/auth.ts` exactly on the actual deployed domain before trusting it, not just in local dev.
 
 ## Data model
 
