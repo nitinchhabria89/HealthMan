@@ -40,3 +40,20 @@ export function lastNDates(n: number): string[] {
   }
   return dates;
 }
+
+const MAX_RANGE_DAYS = 366;
+
+export function datesInRange(start: string, end: string): string[] {
+  if (!isValidDateStr(start) || !isValidDateStr(end)) return [];
+  const startDate = new Date(`${start}T00:00:00`);
+  const endDate = new Date(`${end}T00:00:00`);
+  if (startDate > endDate) return [];
+
+  const dates: string[] = [];
+  const cursor = new Date(startDate);
+  while (cursor <= endDate && dates.length < MAX_RANGE_DAYS) {
+    dates.push(cursor.toISOString().slice(0, 10));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return dates;
+}

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { requireSession, requireWriteAccess } from "@/lib/api-auth";
+import { answerHistoryQuery } from "@/lib/historyQuery";
 import type { ChatMessage, DayLog, Profile } from "@/lib/types";
 
 export async function POST(req: NextRequest) {
@@ -37,13 +38,20 @@ export async function POST(req: NextRequest) {
   ].filter(Boolean);
   const workoutText = workoutParts.length ? workoutParts.join(", ") : "no workout logged";
 
-  const systemPrompt = `You are a supportive personal health & fitness coach embedded in a private health tracker app.
+  let systemPrompt = `You are a supportive personal health & fitness coach embedded in a private health tracker app.
 User profile: ${profile.name}, ${profile.age}yo ${profile.gender}, height ${profile.height}cm, current weight ${profile.currentWeight}kg, target weight ${profile.targetWeight}kg, daily calorie target ${profile.calorieTarget}kcal.
 Today so far: ${consumed}kcal consumed, workout: ${workoutText}, water ${dayContext?.water ?? 0}/${targetGlasses} glasses, mood ${dayContext?.mood || "not set"}, symptoms: ${symptomsText}.
 Be practical, warm, and concise. Use Indian food and lifestyle context where relevant. Do not diagnose medical conditions; suggest seeing a doctor for anything serious.`;
 
   try {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+    const lastUserMessage = [...messages].reverse().find((m) => m.role === "user")?.content;
+    if (lastUserMessage) {
+      const fact = await answerHistoryQuery(openai, session.dataOwnerEmail, lastUserMessage);
+      if (fact) systemPrompt += `\n\n${fact}`;
+    }
+
     const stream = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       max_tokens: 800,
