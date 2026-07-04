@@ -8,9 +8,11 @@ const TYPES: MealType[] = ["breakfast", "lunch", "dinner", "snack", "drink"];
 export default function AddMealForm({
   calorieTarget,
   onAdd,
+  onSavePreset,
 }: {
   calorieTarget: number;
   onAdd: (name: string, calories: number, type: MealType) => void;
+  onSavePreset?: (name: string, calories: number, type: MealType) => void;
 }) {
   const [name, setName] = useState("");
   const [calories, setCalories] = useState("");
@@ -23,6 +25,11 @@ export default function AddMealForm({
     onAdd(name, Number(calories), type);
     setName("");
     setCalories("");
+  }
+
+  function savePreset() {
+    if (!name || !calories || !onSavePreset) return;
+    onSavePreset(name, Number(calories), type);
   }
 
   async function estimate() {
@@ -82,13 +89,24 @@ export default function AddMealForm({
         </select>
       </div>
       {estimateError && <p className="text-red text-xs">{estimateError}</p>}
-      <button
-        onClick={submit}
-        disabled={!name || !calories}
-        className="w-full bg-green text-bg rounded-btn py-2 text-sm font-medium disabled:opacity-50"
-      >
-        Add Meal
-      </button>
+      <div className="flex gap-2">
+        <button
+          onClick={submit}
+          disabled={!name || !calories}
+          className="flex-1 bg-green text-bg rounded-btn py-2 text-sm font-medium disabled:opacity-50"
+        >
+          Add Meal
+        </button>
+        {onSavePreset && (
+          <button
+            onClick={savePreset}
+            disabled={!name || !calories}
+            className="shrink-0 border border-borderLight rounded-btn px-3 text-textMuted text-sm disabled:opacity-50"
+          >
+            ☆ Save
+          </button>
+        )}
+      </div>
     </div>
   );
 }

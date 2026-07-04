@@ -27,6 +27,13 @@ export async function POST(req: NextRequest) {
       ? `walked${dayContext.workout.steps ? ` (${dayContext.workout.steps} steps)` : ""}`
       : null,
     dayContext?.workout?.yoga ? "did yoga" : null,
+    dayContext?.workout?.gym ? "went to the gym" : null,
+    dayContext?.workout?.running
+      ? `ran${dayContext.workout.runningKm ? ` (${dayContext.workout.runningKm}km)` : ""}`
+      : null,
+    dayContext?.workout?.tennis ? "played tennis" : null,
+    dayContext?.workout?.badminton ? "played badminton" : null,
+    dayContext?.workout?.pickleball ? "played pickleball" : null,
   ].filter(Boolean);
   const workoutText = workoutParts.length ? workoutParts.join(", ") : "no workout logged";
 

@@ -6,15 +6,18 @@ import Header from "@/components/ui/Header";
 import AddMealForm from "@/components/food/AddMealForm";
 import PhotoUpload from "@/components/food/PhotoUpload";
 import MealList from "@/components/food/MealList";
+import MealPresets from "@/components/food/MealPresets";
 import { useDay } from "@/hooks/useDay";
 import { useProfile } from "@/hooks/useProfile";
+import { useMealPresets } from "@/hooks/useMealPresets";
 import { todayStr } from "@/lib/utils";
-import type { Meal, MealType } from "@/lib/types";
+import type { Meal, MealPreset, MealType } from "@/lib/types";
 
 export default function FoodPage() {
   const date = useMemo(() => todayStr(), []);
   const { day, loading, error, update } = useDay(date);
   const { profile } = useProfile();
+  const { presets, addPreset, removePreset } = useMealPresets();
   const { data: session } = useSession();
   const readonly = session?.user?.role === "readonly";
 
@@ -50,6 +53,14 @@ export default function FoodPage() {
     update((prev) => ({ meals: prev.meals.filter((m) => m.id !== id) }));
   }
 
+  function savePreset(name: string, calories: number, type: MealType) {
+    addPreset({ id: crypto.randomUUID(), name, calories, type });
+  }
+
+  function addFromPreset(preset: MealPreset) {
+    addMeal(preset.name, preset.calories, preset.type);
+  }
+
   if (loading) return <p className="text-textDim text-sm pt-6">Loading...</p>;
 
   return (
@@ -64,7 +75,16 @@ export default function FoodPage() {
           </span>
         </div>
 
-        {!readonly && <AddMealForm calorieTarget={target} onAdd={addMeal} />}
+        <MealPresets
+          presets={presets}
+          onAdd={addFromPreset}
+          onRemove={removePreset}
+          readonly={readonly}
+        />
+
+        {!readonly && (
+          <AddMealForm calorieTarget={target} onAdd={addMeal} onSavePreset={savePreset} />
+        )}
         {!readonly && <PhotoUpload calorieTarget={target} onConfirm={addPhotoMeal} />}
 
         <MealList meals={day.meals} onDelete={readonly ? () => {} : deleteMeal} />

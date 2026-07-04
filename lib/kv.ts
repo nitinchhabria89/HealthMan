@@ -1,5 +1,5 @@
 import { createClient } from "@vercel/kv";
-import { DayLog, Profile, emptyDayLog } from "./types";
+import { DayLog, MealPreset, Profile, emptyDayLog } from "./types";
 
 // Default Upstash retry (5 attempts, exponential backoff) means a single
 // unreachable-KV failure can take 15-20s+ before surfacing. Cap it so
@@ -16,6 +16,10 @@ function dayKey(email: string, date: string) {
 
 function profileKey(email: string) {
   return `${email}:health:profile`;
+}
+
+function mealPresetsKey(email: string) {
+  return `${email}:health:mealPresets`;
 }
 
 export async function getDay(email: string, date: string): Promise<DayLog> {
@@ -45,4 +49,13 @@ export async function listDayDates(email: string): Promise<string[]> {
 
 export async function getDays(email: string, dates: string[]): Promise<DayLog[]> {
   return Promise.all(dates.map((d) => getDay(email, d)));
+}
+
+export async function getMealPresets(email: string): Promise<MealPreset[]> {
+  const data = await kv.get<MealPreset[]>(mealPresetsKey(email));
+  return data ?? [];
+}
+
+export async function setMealPresets(email: string, presets: MealPreset[]): Promise<void> {
+  await kv.set(mealPresetsKey(email), presets);
 }

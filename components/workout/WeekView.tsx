@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { currentWeekDates, todayStr } from "@/lib/utils";
-import type { DayLog } from "@/lib/types";
+import { isWorkoutDay, type DayLog } from "@/lib/types";
 
 const LABELS = ["M", "T", "W", "T", "F", "S", "S"];
 
@@ -18,7 +18,7 @@ export default function WeekView() {
         if (cancelled) return;
         const next: Record<string, boolean> = {};
         logs.forEach((log, i) => {
-          next[dates[i]] = !!(log?.workout?.walk || log?.workout?.yoga);
+          next[dates[i]] = isWorkoutDay(log?.workout);
         });
         setStatuses(next);
       })

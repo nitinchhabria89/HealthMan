@@ -9,6 +9,13 @@ export type Meal = {
   photoAnalyzed?: boolean;
 };
 
+export type MealPreset = {
+  id: string;
+  name: string;
+  calories: number;
+  type: MealType;
+};
+
 export type Severity = "mild" | "moderate" | "severe";
 
 export type Symptom = {
@@ -30,6 +37,12 @@ export type Workout = {
   walk: boolean;
   steps: number | null;
   yoga: boolean;
+  gym: boolean;
+  running: boolean;
+  runningKm: number | null;
+  tennis: boolean;
+  badminton: boolean;
+  pickleball: boolean;
 };
 
 export type DayLog = {
@@ -76,7 +89,25 @@ export const EMPTY_WORKOUT: Workout = {
   walk: false,
   steps: null,
   yoga: false,
+  gym: false,
+  running: false,
+  runningKm: null,
+  tennis: false,
+  badminton: false,
+  pickleball: false,
 };
+
+export function isWorkoutDay(workout: Workout | undefined | null): boolean {
+  return !!(
+    workout?.walk ||
+    workout?.yoga ||
+    workout?.gym ||
+    workout?.running ||
+    workout?.tennis ||
+    workout?.badminton ||
+    workout?.pickleball
+  );
+}
 
 export function emptyDayLog(date: string): DayLog {
   return {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { DayLog } from "@/lib/types";
+import { isWorkoutDay, type DayLog } from "@/lib/types";
 import { lastNDates } from "@/lib/utils";
 
 export type CountItem = { name: string; count: number };
@@ -38,14 +38,12 @@ function aggregate(dates: string[], days: DayLog[], loggedDates: Set<string>): R
   const totalDays = dates.length;
   const loggedDays = dates.filter((d) => loggedDates.has(d)).length;
 
-  const isActiveDay = (d: DayLog) => !!(d.workout?.walk || d.workout?.yoga);
-
-  const workoutDays = days.filter(isActiveDay).length;
+  const workoutDays = days.filter((d) => isWorkoutDay(d.workout)).length;
   const workoutConsistencyPct = totalDays > 0 ? Math.round((workoutDays / totalDays) * 100) : 0;
 
   let workoutStreak = 0;
   for (let i = days.length - 1; i >= 0; i--) {
-    if (isActiveDay(days[i])) workoutStreak++;
+    if (isWorkoutDay(days[i].workout)) workoutStreak++;
     else break;
   }
 

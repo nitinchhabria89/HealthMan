@@ -1,7 +1,7 @@
 "use client";
 
 import { ResponsiveContainer, BarChart, Bar, XAxis, Tooltip, Cell } from "recharts";
-import type { DayLog } from "@/lib/types";
+import { isWorkoutDay, type DayLog } from "@/lib/types";
 import { formatDisplayDate } from "@/lib/utils";
 
 export default function WorkoutHeatmap({
@@ -15,7 +15,7 @@ export default function WorkoutHeatmap({
     date,
     label: formatDisplayDate(date),
     value: 1,
-    done: !!(days[i]?.workout?.walk || days[i]?.workout?.yoga),
+    done: isWorkoutDay(days[i]?.workout),
   }));
 
   return (
