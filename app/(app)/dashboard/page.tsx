@@ -15,8 +15,13 @@ import { todayStr } from "@/lib/utils";
 
 export default function DashboardPage() {
   const date = useMemo(() => todayStr(), []);
-  const { day, loading: dayLoading, update } = useDay(date);
-  const { profile, loading: profileLoading, update: updateProfile } = useProfile();
+  const { day, loading: dayLoading, error: dayError, update } = useDay(date);
+  const {
+    profile,
+    loading: profileLoading,
+    error: profileError,
+    update: updateProfile,
+  } = useProfile();
   const { data: session } = useSession();
   const readonly = session?.user?.role === "readonly";
 
@@ -33,7 +38,7 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <Header title="Today" />
+      <Header title="Today" error={dayError || profileError} />
 
       <div className="space-y-4">
         <Card>

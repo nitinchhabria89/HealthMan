@@ -95,25 +95,34 @@ function aggregate(dates: string[], days: DayLog[], loggedDates: Set<string>): R
   };
 }
 
+async function fetchJsonOrThrow<T>(url: string): Promise<T> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${url} failed with ${res.status}`);
+  return res.json();
+}
+
 export function useReportData(period: number) {
   const [data, setData] = useState<ReportAggregate | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
+    setError("");
     const dates = lastNDates(period);
 
     Promise.all([
-      fetch("/api/health/keys").then((r) => r.json()) as Promise<{ dates: string[] }>,
-      Promise.all(dates.map((d) => fetch(`/api/health/day?date=${d}`).then((r) => r.json()))) as Promise<
-        DayLog[]
-      >,
+      fetchJsonOrThrow<{ dates: string[] }>("/api/health/keys"),
+      Promise.all(dates.map((d) => fetchJsonOrThrow<DayLog>(`/api/health/day?date=${d}`))),
     ])
       .then(([keysRes, days]) => {
         if (cancelled) return;
         const loggedDates = new Set(keysRes.dates || []);
         setData(aggregate(dates, days, loggedDates));
+      })
+      .catch(() => {
+        if (!cancelled) setError("Couldn't load report data. Check your data connection.");
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -124,5 +133,5 @@ export function useReportData(period: number) {
     };
   }, [period]);
 
-  return { data, loading };
+  return { data, loading, error };
 }

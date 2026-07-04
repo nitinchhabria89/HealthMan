@@ -11,7 +11,7 @@ import type { Workout } from "@/lib/types";
 
 export default function WorkoutPage() {
   const date = useMemo(() => todayStr(), []);
-  const { day, loading, update } = useDay(date);
+  const { day, loading, error, update } = useDay(date);
   const { data: session } = useSession();
   const readonly = session?.user?.role === "readonly";
 
@@ -23,7 +23,7 @@ export default function WorkoutPage() {
 
   return (
     <div>
-      <Header title="Workout" />
+      <Header title="Workout" error={error} />
 
       <div className="space-y-4">
         <WorkoutLogger workout={day.workout} onChange={updateWorkout} readonly={readonly} />

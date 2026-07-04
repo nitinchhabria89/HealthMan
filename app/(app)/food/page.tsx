@@ -13,7 +13,7 @@ import type { Meal, MealType } from "@/lib/types";
 
 export default function FoodPage() {
   const date = useMemo(() => todayStr(), []);
-  const { day, loading, update } = useDay(date);
+  const { day, loading, error, update } = useDay(date);
   const { profile } = useProfile();
   const { data: session } = useSession();
   const readonly = session?.user?.role === "readonly";
@@ -54,7 +54,7 @@ export default function FoodPage() {
 
   return (
     <div>
-      <Header title="Food" />
+      <Header title="Food" error={error} />
 
       <div className="space-y-4">
         <div className="bg-surface border border-border rounded-card p-4 flex items-center justify-between">

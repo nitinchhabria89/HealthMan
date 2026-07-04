@@ -13,7 +13,7 @@ import type { Symptom, Medicine } from "@/lib/types";
 
 export default function HealthPage() {
   const date = useMemo(() => todayStr(), []);
-  const { day, loading, update } = useDay(date);
+  const { day, loading, error, update } = useDay(date);
   const { profile } = useProfile();
   const { data: session } = useSession();
   const readonly = session?.user?.role === "readonly";
@@ -47,7 +47,7 @@ export default function HealthPage() {
 
   return (
     <div>
-      <Header title="Health" />
+      <Header title="Health" error={error} />
 
       <div className="space-y-4">
         <MoodPicker mood={day.mood} onChange={(m) => update({ mood: m })} readonly={readonly} />

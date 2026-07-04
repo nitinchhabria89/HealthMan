@@ -16,13 +16,20 @@ const DEFAULT_PROFILE: Profile = {
 export function useProfile() {
   const [profile, setProfileState] = useState<Profile>(DEFAULT_PROFILE);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
     fetch("/api/health/profile")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`profile fetch failed with ${r.status}`);
+        return r.json();
+      })
       .then((data: Profile | null) => {
         if (!cancelled && data) setProfileState(data);
+      })
+      .catch(() => {
+        if (!cancelled) setError("Couldn't load profile — changes won't be saved.");
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -37,7 +44,12 @@ export function useProfile() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(next),
-    });
+    })
+      .then((r) => {
+        if (!r.ok) throw new Error(`profile save failed with ${r.status}`);
+        setError("");
+      })
+      .catch(() => setError("Couldn't save — changes may be lost on reload."));
   }, []);
 
   const update = useCallback(
@@ -51,5 +63,5 @@ export function useProfile() {
     [persist]
   );
 
-  return { profile, loading, update };
+  return { profile, loading, error, update };
 }

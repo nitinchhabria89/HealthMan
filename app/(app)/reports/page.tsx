@@ -14,8 +14,17 @@ import { useProfile } from "@/hooks/useProfile";
 
 export default function ReportsPage() {
   const [period, setPeriod] = useState(7);
-  const { data, loading } = useReportData(period);
+  const { data, loading, error } = useReportData(period);
   const { profile } = useProfile();
+
+  if (error) {
+    return (
+      <div>
+        <Header title="Reports" />
+        <p className="text-red text-sm">{error}</p>
+      </div>
+    );
+  }
 
   if (loading || !data) {
     return (
