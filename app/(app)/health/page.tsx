@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import Header from "@/components/ui/Header";
+import DaySelector from "@/components/ui/DaySelector";
 import MoodPicker from "@/components/health/MoodPicker";
 import SymptomLogger from "@/components/health/SymptomLogger";
 import MedicineLogger from "@/components/health/MedicineLogger";
@@ -12,7 +13,7 @@ import { todayStr } from "@/lib/utils";
 import type { Symptom, Medicine } from "@/lib/types";
 
 export default function HealthPage() {
-  const date = useMemo(() => todayStr(), []);
+  const [date, setDate] = useState(todayStr());
   const { day, loading, error, update } = useDay(date);
   const { profile } = useProfile();
   const { data: session } = useSession();
@@ -50,6 +51,8 @@ export default function HealthPage() {
       <Header title="Health" error={error} />
 
       <div className="space-y-4">
+        <DaySelector date={date} onChange={setDate} />
+
         <MoodPicker mood={day.mood} onChange={(m) => update({ mood: m })} readonly={readonly} />
 
         <SymptomLogger

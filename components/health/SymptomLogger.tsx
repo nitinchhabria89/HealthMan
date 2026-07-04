@@ -77,7 +77,7 @@ export default function SymptomLogger({
 
       <div className="space-y-3 pt-2">
         {symptoms.length === 0 && (
-          <p className="text-textDim text-sm">No symptoms logged today</p>
+          <p className="text-textDim text-sm">No symptoms logged</p>
         )}
         {symptoms.map((s) => (
           <div key={s.id} className="border-t border-border pt-3">

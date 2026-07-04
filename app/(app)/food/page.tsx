@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import Header from "@/components/ui/Header";
+import DaySelector from "@/components/ui/DaySelector";
 import AddMealForm from "@/components/food/AddMealForm";
 import PhotoUpload from "@/components/food/PhotoUpload";
 import MealList from "@/components/food/MealList";
@@ -10,11 +11,11 @@ import MealPresets from "@/components/food/MealPresets";
 import { useDay } from "@/hooks/useDay";
 import { useProfile } from "@/hooks/useProfile";
 import { useMealPresets } from "@/hooks/useMealPresets";
-import { todayStr } from "@/lib/utils";
+import { todayStr, formatDisplayDate } from "@/lib/utils";
 import type { Meal, MealPreset, MealType } from "@/lib/types";
 
 export default function FoodPage() {
-  const date = useMemo(() => todayStr(), []);
+  const [date, setDate] = useState(todayStr());
   const { day, loading, error, update } = useDay(date);
   const { profile } = useProfile();
   const { presets, addPreset, removePreset } = useMealPresets();
@@ -25,6 +26,7 @@ export default function FoodPage() {
   const consumed = day.meals.reduce((sum, m) => sum + m.calories, 0);
   const ratio = target > 0 ? consumed / target : 0;
   const color = ratio >= 1 ? "text-red" : ratio >= 0.8 ? "text-amber" : "text-green";
+  const totalLabel = date === todayStr() ? "Today's Total" : `${formatDisplayDate(date)} Total`;
 
   function addMeal(name: string, calories: number, type: MealType) {
     const meal: Meal = {
@@ -68,8 +70,10 @@ export default function FoodPage() {
       <Header title="Food" error={error} />
 
       <div className="space-y-4">
+        <DaySelector date={date} onChange={setDate} />
+
         <div className="bg-surface border border-border rounded-card shadow-card p-4 flex items-center justify-between">
-          <span className="label">Today&apos;s Total</span>
+          <span className="label">{totalLabel}</span>
           <span className={`text-lg font-semibold ${color}`}>
             {consumed} / {target} kcal
           </span>

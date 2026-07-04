@@ -61,6 +61,7 @@ All types in `lib/types.ts`. KV helpers in `lib/kv.ts` (`getDay`, `setDay`, `get
 - Mobile-first, `max-w-app` (560px) centered, `px-4` page padding.
 - Multi-field rows (name + amount + button, etc.) need explicit `w-*`/`shrink-0`/`min-w-0` — plain `flex-1` siblings will overflow off-screen at 375px width once you add a 3rd element to a row. Bit us twice (`AddMealForm`, `MedicineLogger`) before landing on this rule.
 - Bottom tab bar (`components/ui/TabBar.tsx`): 6 tabs — Today/Food/Health/Workout/Coach/Reports, deliberately fixed. Sub-pages that don't warrant a 7th tab (e.g. `/weight`, `/menu`) are reached via a link from whichever Dashboard card they detail, and use `Header`'s `backHref` prop to render a "← Back" link instead of adding nav real estate.
+- Food/Health/Workout pages default to today but aren't locked to it — `components/ui/DaySelector.tsx` (a chip row over `lib/utils.ts`'s `lastNDates(7)`) lets you pick any of the last 7 days and edit that day's log, for back-filling forgotten entries. It's just a `useState<string>` feeding the same `useDay(date)` hook already used everywhere — no backend changes needed, since `useDay`/`/api/health/day` were already date-parameterized. Dashboard and Weight/Menu pages stay today-only by design (Dashboard is the daily-glance view; Weight/Menu already have their own history/multi-day UI).
 
 ## File structure
 

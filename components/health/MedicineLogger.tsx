@@ -54,7 +54,7 @@ export default function MedicineLogger({
 
       <div className="space-y-2">
         {medicines.length === 0 && (
-          <p className="text-textDim text-sm">No medicines logged today</p>
+          <p className="text-textDim text-sm">No medicines logged</p>
         )}
         {medicines.map((m) => (
           <div

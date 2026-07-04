@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import Header from "@/components/ui/Header";
+import DaySelector from "@/components/ui/DaySelector";
 import WorkoutLogger from "@/components/workout/WorkoutLogger";
 import WeekView from "@/components/workout/WeekView";
 import { useDay } from "@/hooks/useDay";
@@ -10,7 +11,7 @@ import { todayStr } from "@/lib/utils";
 import type { Workout } from "@/lib/types";
 
 export default function WorkoutPage() {
-  const date = useMemo(() => todayStr(), []);
+  const [date, setDate] = useState(todayStr());
   const { day, loading, error, update } = useDay(date);
   const { data: session } = useSession();
   const readonly = session?.user?.role === "readonly";
@@ -26,6 +27,8 @@ export default function WorkoutPage() {
       <Header title="Workout" error={error} />
 
       <div className="space-y-4">
+        <DaySelector date={date} onChange={setDate} />
+
         <WorkoutLogger workout={day.workout} onChange={updateWorkout} readonly={readonly} />
         <WeekView />
       </div>
