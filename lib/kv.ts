@@ -1,5 +1,14 @@
-import { kv } from "@vercel/kv";
+import { createClient } from "@vercel/kv";
 import { DayLog, Profile, emptyDayLog } from "./types";
+
+// Default Upstash retry (5 attempts, exponential backoff) means a single
+// unreachable-KV failure can take 15-20s+ before surfacing. Cap it so
+// failures fail fast instead of hanging every page load.
+const kv = createClient({
+  url: process.env.KV_REST_API_URL || "",
+  token: process.env.KV_REST_API_TOKEN || "",
+  retry: { retries: 1, backoff: () => 200 },
+});
 
 function dayKey(email: string, date: string) {
   return `${email}:health:day:${date}`;

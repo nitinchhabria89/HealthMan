@@ -34,6 +34,8 @@ All types in `lib/types.ts`. KV helpers in `lib/kv.ts` (`getDay`, `setDay`, `get
 
 ## Known gotchas
 
+- **KV retry config**: `lib/kv.ts` builds its client via `createClient({ retry: { retries: 1, backoff: () => 200 } })` instead of importing the default `kv` singleton. The default Upstash client retries 5x with exponential backoff on *any* failed request — against an unreachable host (wrong URL, DNS failure, KV not provisioned yet) that turns a single failed call into 15-20+ seconds, and every page fetches at least one day/profile on load. Don't revert to the default `kv` export without re-adding an explicit low-retry config, or local dev against a misconfigured KV becomes painfully slow.
+
 - **`.env.local` and `$` characters**: Next.js's dotenv-expand interprets `$2b$10$...` (bcrypt hash syntax) as variable references, silently corrupting the hash into an empty string. Escape as `\$2b\$10\$...` in local `.env` files. Not an issue for env vars set directly in the Vercel dashboard/CLI — those are literal.
 - The `jose`/`@auth/core` edge-runtime warnings about `CompressionStream`/`DecompressionStream` during build are harmless (unused code path in an optional feature) — not the same as the bcrypt issue above, which is a hard error if not split correctly.
 
