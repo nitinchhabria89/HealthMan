@@ -7,6 +7,7 @@ import AddMealForm from "@/components/food/AddMealForm";
 import PhotoUpload from "@/components/food/PhotoUpload";
 import MealList from "@/components/food/MealList";
 import MealPresets from "@/components/food/MealPresets";
+import FoodIdeas from "@/components/food/FoodIdeas";
 import { useDay } from "@/hooks/useDay";
 import { useProfile } from "@/hooks/useProfile";
 import { useMealPresets } from "@/hooks/useMealPresets";
@@ -81,6 +82,8 @@ export default function FoodPage() {
           onRemove={removePreset}
           readonly={readonly}
         />
+
+        {!readonly && <FoodIdeas calorieTarget={target} onConfirm={addMeal} />}
 
         {!readonly && (
           <AddMealForm calorieTarget={target} onAdd={addMeal} onSavePreset={savePreset} />

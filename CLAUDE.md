@@ -81,6 +81,7 @@ All types in `lib/types.ts`. KV helpers in `lib/kv.ts` (`getDay`, `setDay`, `get
 - Meal/symptom/medicine IDs: `crypto.randomUUID()`, client-generated.
 - `/api/ai/analyze-food` accepts *either* `{ image, mimeType }` (photo) *or* `{ description }` (text-only, e.g. "2 boiled eggs and a banana") — the description path skips the vision call and asks the model to estimate calories from the text directly. `AddMealForm`'s "Estimate" button uses the text path; `PhotoUpload` uses the image path. Same route, same response shape (`{ analysis, estimatedCalories }`).
 - Report aggregation (`hooks/useReportData.ts`) fetches `/api/health/keys` (for accurate "days logged" count) *and* every day in the period in parallel (for chart continuity, including gap days) — don't collapse this into one fetch, they serve different purposes.
+- `lib/foodOptions.ts` is a static, hardcoded list of Nitin's regular home-cooked dishes (from his health coach's reference sheet) — name + meal type only, no ingredients or macros. `components/food/FoodIdeas.tsx` uses it for "Surprise Me" (random pick, optionally filtered by meal type) and a browse/search list. The search is a plain substring match against dish *names*, not real ingredient tagging — it catches dishes like "Paneer Masala" but not regional names that don't spell out ingredients (e.g. "Koki", "Thalipeeth"). Don't oversell it as smarter than that.
 
 ## Environment variables
 
