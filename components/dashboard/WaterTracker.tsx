@@ -40,7 +40,7 @@ export default function WaterTracker({
                 borderColor: filled ? "#0056D2" : "#EDF1F5",
               }}
             >
-              <span style={{ color: filled ? "#0056D2" : "#94A3B8", fontSize: 14 }}>💧</span>
+              <span style={{ color: filled ? "#0056D2" : "#94A3B8", fontSize: 17 }}>💧</span>
             </button>
           );
         })}

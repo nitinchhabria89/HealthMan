@@ -28,13 +28,13 @@ export default function TabBar() {
             >
               <span
                 className="leading-none"
-                style={{ fontSize: 20, opacity: active ? 1 : 0.5 }}
+                style={{ fontSize: 24, opacity: active ? 1 : 0.5 }}
               >
                 {tab.icon}
               </span>
               <span
                 className={`leading-none ${active ? "text-green" : "text-textMuted"}`}
-                style={{ fontSize: 9 }}
+                style={{ fontSize: 11 }}
               >
                 {tab.label}
               </span>

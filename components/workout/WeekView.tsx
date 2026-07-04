@@ -45,7 +45,7 @@ export default function WeekView() {
                   border: `1px solid ${isToday ? "#16A34A" : done ? "#16A34A" : "#EDF1F5"}`,
                 }}
               >
-                <span style={{ color: done ? "#16A34A" : "#64748B", fontSize: 12 }}>
+                <span style={{ color: done ? "#16A34A" : "#64748B", fontSize: 14 }}>
                   {done ? "✓" : "·"}
                 </span>
               </div>

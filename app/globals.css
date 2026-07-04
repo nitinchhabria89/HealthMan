@@ -6,6 +6,10 @@
   color-scheme: light;
 }
 
+html {
+  font-size: 118%;
+}
+
 html,
 body {
   background: #f8fafc;
@@ -14,7 +18,7 @@ body {
 
 @layer utilities {
   .label {
-    font-size: 11px;
+    font-size: 0.6875rem;
     text-transform: uppercase;
     letter-spacing: 0.09em;
     color: #64748b;
