@@ -56,7 +56,7 @@ All types in `lib/types.ts`. KV helpers in `lib/kv.ts` (`getDay`, `setDay`, `get
 - Logo: `components/ui/Logo.tsx` exports `LogoIcon` (blue rounded-square "N" mark) and `LogoFull` (icon + "NITIN CHHABRIA" wordmark, dark/blue two-tone). `LogoFull` on the login page, `LogoIcon` in every in-app `Header`. This is Nitin's personal brand mark reused intentionally — don't swap for a generic health/fitness icon.
 - Mobile-first, `max-w-app` (560px) centered, `px-4` page padding.
 - Multi-field rows (name + amount + button, etc.) need explicit `w-*`/`shrink-0`/`min-w-0` — plain `flex-1` siblings will overflow off-screen at 375px width once you add a 3rd element to a row. Bit us twice (`AddMealForm`, `MedicineLogger`) before landing on this rule.
-- Bottom tab bar (`components/ui/TabBar.tsx`): 6 tabs — Today/Food/Health/Workout/Coach/Reports.
+- Bottom tab bar (`components/ui/TabBar.tsx`): 6 tabs — Today/Food/Health/Workout/Coach/Reports, deliberately fixed. Sub-pages that don't warrant a 7th tab (e.g. `/weight`) are reached via a link from whichever Dashboard card they detail, and use `Header`'s `backHref` prop to render a "← Back" link instead of adding nav real estate.
 
 ## File structure
 

@@ -1,13 +1,27 @@
 "use client";
 
+import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { LogoIcon } from "./Logo";
 
-export default function Header({ title, error }: { title: string; error?: string }) {
+export default function Header({
+  title,
+  error,
+  backHref,
+}: {
+  title: string;
+  error?: string;
+  backHref?: string;
+}) {
   const { data: session } = useSession();
 
   return (
     <div className="pt-6 pb-4">
+      {backHref && (
+        <Link href={backHref} className="text-blue text-sm inline-block mb-2">
+          ← Back
+        </Link>
+      )}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <LogoIcon size={32} />
