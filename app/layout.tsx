@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import Providers from "@/components/Providers";
 import "./globals.css";
@@ -9,9 +9,20 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const appName = process.env.NEXT_PUBLIC_APP_NAME || "Health Tracker";
+
 export const metadata: Metadata = {
-  title: process.env.NEXT_PUBLIC_APP_NAME || "Health Tracker",
+  title: appName,
   description: "Personal health tracker",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: appName,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0056D2",
 };
 
 export default function RootLayout({
